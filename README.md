@@ -7,7 +7,7 @@ lumbergh
 
 [What's Deployed](https://whatsdeployed.io/s-k9W)
 
-Run the tests
+Run the ftests
 -------------
 
 There's a sample test in `lumbergh/base/tests.py` for your convenience, that
