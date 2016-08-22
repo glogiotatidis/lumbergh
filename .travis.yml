@@ -19,7 +19,7 @@ env:
     - DOCKER_REPOSITORY=mozorg/lumbergh
     - DOCKER_EMAIL="foo@example.com"
     - DOCKER_USERNAME="mozjenkins"
-    - DOCKER_CACHE_FILE=/home/travis/docker/cache.tar.gz
+    - DOCKER_CACHE_DIR=/home/travis/docker/
 
     # Django
     - DEBUG=False
@@ -33,7 +33,7 @@ cache:
 before_install:
   - docker --version
   - echo "ENV GIT_SHA ${TRAVIS_COMMIT}" >> Dockerfile
-  - if [ -f ${DOCKER_CACHE_FILE} ]; then  gunzip -c /home/travis/docker/cache.tar.gz | docker load ; fi
+  - ./bin/docker-cache-load.sh ${DOCKER_CACHE_DIR}
 install:
   # Take advantage of docker caching by pulling previously built images.
   - docker build -t ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} --pull=true .
@@ -45,8 +45,7 @@ script:
   # # Wait database to initialize.
   # - docker run --link mariadb:db -e CHECK_PORT=3306 -e CHECK_HOST=db giorgos/takis
   # - docker run --env-file .env --link mariadb:db ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} coverage run ./manage.py test
-  - docker save ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} $(docker history -q ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} | tail -n +2 | grep -v \<missing\> | tr '\n' ' ') | gzip > ${DOCKER_CACHE_FILE}
-  - echo 0;
+  - ./bin/docker-cache-save.sh ${DOCKER_CACHE_DIR}
 
 after_success:
   - sudo docker cp `docker ps -a -q | head -n 1`:/app /
