@@ -46,6 +46,7 @@ script:
   # - docker run --link mariadb:db -e CHECK_PORT=3306 -e CHECK_HOST=db giorgos/takis
   # - docker run --env-file .env --link mariadb:db ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} coverage run ./manage.py test
   - docker save ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} $(docker history -q ${DOCKER_REPOSITORY}:${TRAVIS_COMMIT} | tail -n +2 | grep -v \<missing\> | tr '\n' ' ') | gzip > ${DOCKER_CACHE_FILE}
+  - echo 0;
 
 after_success:
   - sudo docker cp `docker ps -a -q | head -n 1`:/app /
