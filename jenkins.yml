@@ -1,0 +1,21 @@
+project:
+  name: lumbergh
+app:
+  env:
+    SECRET_KEY: "foo"
+    DEBUG: False
+    ALLOWED_HOSTS: "*"
+    DATABASE_URL: mysql://root@db/careers
+    SECURE_SSL_REDIRECT: False
+notifications:
+  irc:
+    server: irc.mozilla.org:6697
+    channel: "#pipeline-test"
+    nickname: giorgos-jenkins
+    on_success: change
+    on_failure: always
+  email:
+    recipients:
+      - foo@example.com
+    on_success: change
+    on_failure: always
