@@ -3,11 +3,6 @@ def stage_deployed = false
 def config
 
 def stageDeploy(image) {
-  stage("Stage") {
-    deisLogin("https://deis.eu-west.moz.works", config.project.deis_credentials) {
-      // deisPull(config.project.deis_stage_app, image)
-    }
-  }
 }
 
 duct {
@@ -78,36 +73,40 @@ duct {
     // stage("Upload Images") {
     //   dockerImagePush(docker_image_name, "mozjenkins-docker-hub")
     // }
+  }
 
-    milestone()
-
-    println BRANCH_NAME
-
+  milestone()
+  node {
     onBranch("master") {
-      stageDeploy(docker_image_name)
+      stage("Stage") {
+        deisLogin("https://deis.eu-west.moz.works", config.project.deis_credentials) {
+      // deisPull(config.project.deis_stage_app, image)
+        }
+      }
       stage_deployed = true
     }
-
-    // onTag(/\d{4}\d{2}\d{2}.\d{1,2}/) {
-    //   if (!stage_deployed) {
-    //     stageDeploy()
-    //   }
-    //   timeout(time: 10, unit: 'MINUTES') {
-    //     input("Push to Production on Deis US-West?")
-    //   }
-    //   stage ("Production Push (US-West)") {
-    //     deisLogin(config.project.deis_usw, config.project.deis_credentials) {
-    //       // deisPull(config.project.deis_prod_app, docker_image_name)
-    //     }
-    //   }
-    //   timeout(time: 10, unit: 'MINUTES') {
-    //     input("Push to Production on Deis EU-West?")
-    //   }
-    //   stage ("Production Push (US-West)") {
-    //     deisLogin(config.projects.deis_euw, config.project.deis_credentials) {
-    //       // deisPull(config.project.deis_prod_app, docker_image_name)
-    //     }
-    //   }
-    // }
   }
+  // node {
+  //   onTag(/\d{4}\d{2}\d{2}.\d{1,2}/) {
+  //     if (!stage_deployed) {
+  //       stageDeploy()
+  //     }
+  //     timeout(time: 10, unit: 'MINUTES') {
+  //       input("Push to Production on Deis US-West?")
+  //     }
+  //     stage ("Production Push (US-West)") {
+  //       deisLogin(config.project.deis_usw, config.project.deis_credentials) {
+  //         // deisPull(config.project.deis_prod_app, docker_image_name)
+  //       }
+  //     }
+  //     timeout(time: 10, unit: 'MINUTES') {
+  //       input("Push to Production on Deis EU-West?")
+  //     }
+  //     stage ("Production Push (US-West)") {
+  //       deisLogin(config.projects.deis_euw, config.project.deis_credentials) {
+  //         // deisPull(config.project.deis_prod_app, docker_image_name)
+  //       }
+  //     }
+  //   }
+  // }
 }
