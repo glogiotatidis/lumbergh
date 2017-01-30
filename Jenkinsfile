@@ -91,7 +91,7 @@ duct {
     node {
       stage("Stage") {
         deisLogin("https://deis.us-west.moz.works", config.project.deis_credentials) {
-          deisPull(config.project.deis_stage_app, docker_image)
+          //          deisPull(config.project.deis_stage_app, docker_image)
         }
       }
       stage_deployed = true
@@ -103,7 +103,7 @@ duct {
       }
       stage ("Production Push (US-West)") {
         deisLogin(config.project.deis_usw, config.project.deis_credentials) {
-          deisPull(config.project.deis_prod_app, docker_image)
+          // deisPull(config.project.deis_prod_app, docker_image)
         }
       }
       timeout(time: 10, unit: 'MINUTES') {
@@ -111,7 +111,7 @@ duct {
       }
       stage ("Production Push (EU-West)") {
         deisLogin(config.project.deis_euw, config.project.deis_credentials) {
-          deisPull(config.project.deis_prod_app, docker_image)
+          // deisPull(config.project.deis_prod_app, docker_image)
         }
       }
   }
