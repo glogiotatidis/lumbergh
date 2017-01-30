@@ -84,17 +84,16 @@ duct {
       stage_deployed = true
     }
   }
-  onTag(/\d{4}\d{2}\d{2}.\d{1,2}/) {
-    if (!stage_deployed) {
-      node {
+  node {
+    // onTag needs a node
+    onTag(/\d{4}\d{2}\d{2}.\d{1,2}/) {
+      if (!stage_deployed) {
         stage("Stage") {
           deisLogin("https://deis.us-west.moz.works", config.project.deis_credentials) {
             deisPull(config.project.deis_stage_app, docker_imageimage)
           }
         }
       }
-    }
-    node {
       timeout(time: 10, unit: 'MINUTES') {
         input("Push to Production on Deis US-West?")
       }
@@ -103,8 +102,6 @@ duct {
           deisPull(config.project.deis_prod_app, docker_image)
         }
       }
-    }
-    node {
       timeout(time: 10, unit: 'MINUTES') {
         input("Push to Production on Deis EU-West?")
       }
