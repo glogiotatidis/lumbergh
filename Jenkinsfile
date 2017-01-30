@@ -74,8 +74,21 @@ duct {
   }
 
   milestone()
+
+  def deployStage = false
+  def deployProd = false
+
   node {
     onBranch("master") {
+      deployStage = true
+    }
+    onTag(/\d{4}\d{2}\d{2}.\d{1,2}/) {
+      deployProd = true
+    }
+  }
+
+  if (deployStage) {
+    node {
       stage("Stage") {
         deisLogin("https://deis.us-west.moz.works", config.project.deis_credentials) {
           deisPull(config.project.deis_stage_app, docker_image)
@@ -84,16 +97,7 @@ duct {
       stage_deployed = true
     }
   }
-  node {
-    // onTag needs a node
-    onTag(/\d{4}\d{2}\d{2}.\d{1,2}/) {
-      if (!stage_deployed) {
-        stage("Stage") {
-          deisLogin("https://deis.us-west.moz.works", config.project.deis_credentials) {
-            deisPull(config.project.deis_stage_app, docker_imageimage)
-          }
-        }
-      }
+  if (deployProd) {
       timeout(time: 10, unit: 'MINUTES') {
         input("Push to Production on Deis US-West?")
       }
@@ -110,6 +114,5 @@ duct {
           deisPull(config.project.deis_prod_app, docker_image)
         }
       }
-    }
   }
 }
