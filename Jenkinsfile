@@ -1,6 +1,7 @@
 @Library('github.com/glogiotatidis/jenkins-pipeline@more-commands')
 def stage_deployed = false
 def config
+def docker_image
 
 duct {
   node {
@@ -21,7 +22,7 @@ duct {
       }
     }
 
-    def docker_image = "${config.project.docker_name}:${GIT_COMMIT_SHORT}"
+    docker_image = "${config.project.docker_name}:${GIT_COMMIT_SHORT}"
 
     stage("Build") {
       if (!dockerImageExists(docker_image)) {
