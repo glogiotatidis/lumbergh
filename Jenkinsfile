@@ -2,9 +2,6 @@
 def stage_deployed = false
 def config
 
-def stageDeploy(image) {
-}
-
 duct {
   node {
     stage("Prepare") {
@@ -79,39 +76,42 @@ duct {
   node {
     onBranch("master") {
       stage("Stage") {
-        deisLogin("https://deis.eu-west.moz.works", config.project.deis_credentials) {
-      // deisPull(config.project.deis_stage_app, image)
+        deisLogin("https://deis.us-west.moz.works", config.project.deis_credentials) {
+          deisPull(config.project.deis_stage_app, image)
         }
       }
       stage_deployed = true
     }
   }
-  node {
-    onTag(/\d{4}\d{2}\d{2}.\d{1,2}/) {
-      if (!stage_deployed) {
+  onTag(/\d{4}\d{2}\d{2}.\d{1,2}/) {
+    if (!stage_deployed) {
+      node {
+
         stage("Stage") {
-          deisLogin("https://deis.eu-west.moz.works", config.project.deis_credentials) {
-            // deisPull(config.project.deis_stage_app, image)
+          deisLogin("https://deis.us-west.moz.works", config.project.deis_credentials) {
+            deisPull(config.project.deis_stage_app, image)
           }
         }
       }
-      timeout(time: 10, unit: 'MINUTES') {
-        input("Push to Production on Deis US-West?")
-      }
+    }
+    timeout(time: 10, unit: 'MINUTES') {
+      input("Push to Production on Deis US-West?")
+    }
+    node {
       stage ("Production Push (US-West)") {
         deisLogin(config.project.deis_usw, config.project.deis_credentials) {
-          println "us-west"
-          // deisPull(config.project.deis_prod_app, docker_image_name)
+          deisPull(config.project.deis_prod_app, docker_image_name)
         }
       }
-      timeout(time: 10, unit: 'MINUTES') {
-        input("Push to Production on Deis EU-West?")
-      }
+    }
+    timeout(time: 10, unit: 'MINUTES') {
+      input("Push to Production on Deis EU-West?")
+    }
+    node {
       stage ("Production Push (EU-West)") {
-        deisLogin(config.projects.deis_euw, config.project.deis_credentials) {
+        deisLogin(config.project.deis_euw, config.project.deis_credentials) {
           println "eu-west"
-
-          // deisPull(config.project.deis_prod_app, docker_image_name)
+          deisPull(config.project.deis_prod_app, docker_image_name)
         }
       }
     }
