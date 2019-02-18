@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.conf.urls import include, url
+from django.conf.urls import include, url, re_path
 from django.views.static import serve as servestatic
 
 from watchman import views as watchman_views
@@ -13,6 +13,10 @@ urlpatterns = [
     # contribute.json url
     url(r'^(?P<path>contribute\.json)$', servestatic,
         kwargs={'document_root': settings.ROOT}),
+
+    re_path(r'^.well-known/acme-challenge/(?P<path>.*)$',
+            servestatic,
+            {'document_root': settings.ROOT + '/.well-known/acme-challenge/'}),
 
     # Generate a robots.txt
     url(r'^robots\.txt$', views.robots, name='robots'),
